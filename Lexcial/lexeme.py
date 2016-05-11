@@ -39,3 +39,6 @@ Lex['else'] = 33
 Lex['while'] = 34
 Lex['true'] = 35
 Lex['false'] = 36
+Lex['->'] = 37
+
+

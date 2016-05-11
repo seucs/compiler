@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>153a81ad-d8d2-44e2-bdc6-1035307e23b6</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>testplot.py</StartupFile>
+    <StartupFile>Lexcial.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -24,6 +24,9 @@
   <ItemGroup>
     <Compile Include="Lexcial.py" />
     <Compile Include="lexeme.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="other.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Syntactic.py">

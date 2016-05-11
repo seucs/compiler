@@ -11,7 +11,7 @@ LexmeArr = []
 def CheckChar(s, s2):
     global string,number,variety,character
     mode = 0
-    if s in "qwertyuiopasdfghjklzxcvbnm_":
+    if s in "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM_":
         mode = 1
         variety = s
     elif s in "0123456789":
@@ -62,7 +62,7 @@ def Lexcial():
         elif mode == 0:
             mode = CheckChar(s, s2)
         elif mode == 1:
-            if s in "qwertyuiopasdfghjklzxcvbnm_0123456789":
+            if s in "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM_0123456789":
                 variety += s
             else:
                 dic = {}
