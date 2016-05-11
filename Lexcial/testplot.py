@@ -82,6 +82,7 @@ def createPlot(inTree):
     plotTree(inTree, (0.5,1.0), '')
     plt.show()
 
+    
 tree = {'aaa':{0:'qqq',1:'zzz'}}
 createPlot(tree)
 
