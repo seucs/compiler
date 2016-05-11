@@ -81,7 +81,7 @@ class Lex():
     # 解析正规表达式
     def ReToNFA(self):
         for t in self.ReTokenArr:
-            
+            pass
             
 lexer = Lex('../code/lex.l')
 

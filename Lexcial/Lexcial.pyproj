@@ -29,9 +29,11 @@
     <Compile Include="other.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SeuLex.py" />
     <Compile Include="Syntactic.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="testLex.py" />
     <Compile Include="testplot.py">
       <SubType>Code</SubType>
     </Compile>
