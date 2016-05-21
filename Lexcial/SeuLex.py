@@ -80,10 +80,69 @@ class Lex():
 
     # 解析正规表达式
     def ReToNFA(self):
-        for t in self.ReTokenArr:
+
+        # 合并NFA
+        def mergeNFA(NFA1, NFA2, op):
+            if op == '&':
+                pass
+            elif op == '|':
+                pass
+            elif op == '*':
+                pass
+
+        # s is a set, not string when op == []
+        def getNFA(s, op=''):
+            if op == '[]':
+                res = {
+                    'start':0,
+                    'end':1,
+                    'table':{0:{},1:None},
+                    'edge':[c for c in s]
+                    }
+                for c in s:
+                    res['table'][0][c] = 1
+                return res
+            else:
+                return {
+                   'start':0,
+                   'end':1,
+                   'table':{0:{s:1}, 1:None},
+                   'edge':[s]
+                    }
+
+        #string2set
+        def str2set(s):
+            res = []
+            while s.find('-') != -1:
+                pos = s.find('-')
+                first_char = s[pos-1]
+                end_char = s[pos+1]
+
+
+        #for t in self.ReTokenArr:
+        #    print t.re
+        re = 'ab*'
+        NFAarr = []
+        lastNFA = None
+        while i < len(re):
+            s = re[i]
+            if s == '*':
+                lastNFA = mergeNFA(lastNFA, None, '*')
+            elif s == '[':
+                if(lastNFA != None):
+                    NFAarr.append(lastNFA)
+
+            else:
+                if(lastNFA != None):
+                    NFAarr.append(lastNFA)
+                lastNFA = getNFA(s)
+            i+=1
+        
             
-            
+
+
 lexer = Lex('../code/lex.l')
+
 
 
 #NFA = {
