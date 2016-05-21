@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>153a81ad-d8d2-44e2-bdc6-1035307e23b6</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>Lexcial.py</StartupFile>
+    <StartupFile>ReToNFA.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -22,21 +22,30 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Lexcial.py" />
-    <Compile Include="lexeme.py">
+    <Compile Include="Before\Lexcial.py" />
+    <Compile Include="Before\lexeme.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="other.py">
+    <Compile Include="Before\other.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ReToNFA.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SeuLex.py" />
-    <Compile Include="Syntactic.py">
+    <Compile Include="Before\Syntactic.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="test.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="testLex.py" />
-    <Compile Include="testplot.py">
+    <Compile Include="Before\testplot.py">
       <SubType>Code</SubType>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Before\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
