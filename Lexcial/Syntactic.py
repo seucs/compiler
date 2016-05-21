@@ -144,7 +144,16 @@ def parserStr(S,Tokenstr):
             rule = PPT[sta._top()][s]
             if rule == []:
                 print 'error!!!!!!!!!!!!!!!!!'
-                return parser       
+                return parser     
+            parser['production'].append(str(rule))
+            sta.pop()
+            for item in rule[::-1]:
+                if item == -1:
+                    continue
+                sta.push(item)
+        i += 1
+    parser['production'].append(str(['accept']))
+    return parser    
         
 createPPT('E')
 p = parserStr('E',[4,0,4,1])
