@@ -11,6 +11,9 @@ alphanum		[A-Za-z0-9_]
 "="
 "/"
 "+"
+"("
+")"
+"-"
 "<"
 ">"
 "<<"
@@ -20,7 +23,8 @@ alphanum		[A-Za-z0-9_]
 ">="
 "<="
 using
-namespace	
+namespace
+include	
 int			
 if			
 else		

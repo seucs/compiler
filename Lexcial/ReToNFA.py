@@ -68,6 +68,7 @@ class NFAManager:
 
     def feed(self, re, property):
         #self.next_node = -1
+        re = self.convertRealParenthesis(re)
         re = self.convertSquareBrackets(re)
         nfa = self.convert(re)
         nfa.store(property)
@@ -78,6 +79,29 @@ class NFAManager:
         self.next_node += 1
         return self.next_node
 
+    # 处理 \( 和 \) ，RegEx中 \(->@ \)->$
+    def convertRealParenthesis(self, string):
+        i = 0
+        newstr = ""
+        while i != len(string):
+            if string[i] == '\\':
+                if i+1 >= len(string):
+                    newstr += '\\'
+                    break
+                if string[i+1] == '(':
+                    newstr += '@'
+                    i += 1
+                elif string[i+1] == ')':
+                    newstr += '$'
+                    i += 1
+                else:
+                    newstr += string[i]
+            else:
+                newstr += string[i]
+            i += 1
+        return newstr
+        raise Exception("mysterious character appears at wrong positon!")
+        
     # 处理方括号[]，将方括号中的内容转成『或』的形式
     def convertSquareBrackets(self, string):
         i = 0
@@ -94,27 +118,28 @@ class NFAManager:
             elif string[i] == ']':
                 newstr += ')'
                 flag = False
-            elif string[i] == '-':    # 必然出现在方括号内
-                small = string[i-1]
-                big = string[i+1]
-                m = ord(small)
-                n = ord(big)
-                for j in range(m, n+1):
-                    if j == n and string[i+2] == ']':
-                        newstr += chr(j)
-                    else:
-                        newstr += chr(j)
-                        newstr += "|"
             else:
                 if flag == False:   # 方括号外
                     newstr += string[i]
                 if flag == True:    # 方括号内
-                    if string[i-1] != '-' and string[i+1] != '-':
-                        if string[i+1] == ']':
-                            newstr += string[i]
-                        else:
-                            newstr += string[i]
-                            newstr += '|'
+                    if string[i] == '-':
+                        small = string[i-1]
+                        big = string[i+1]
+                        m = ord(small)
+                        n = ord(big)
+                        for j in range(m, n+1):
+                            if j == n and string[i+2] == ']':
+                                newstr += chr(j)
+                            else:
+                                newstr += chr(j)
+                                newstr += "|"
+                    else:
+                        if string[i-1] != '-' and string[i+1] != '-':
+                           if string[i+1] == ']':
+                               newstr += string[i]
+                           else:
+                               newstr += string[i]
+                               newstr += '|'
             i += 1
         return newstr
 
@@ -142,7 +167,23 @@ class NFAManager:
             mg.last = self.nextNode()
             mg.graph.add_edge(mg.first, mg.last, label=terminal)
             return mg
-
+        
+        # 将真左括号转成图
+        def convertLeftBracket2MG():
+            mg = NFA()
+            mg.first = self.nextNode()
+            mg.last = self.nextNode()
+            mg.graph.add_edge(mg.first, mg.last, label='(')
+            return mg
+            
+        # 将真右括号转成图
+        def convertRightBracket2MG():
+            mg = NFA()
+            mg.first = self.nextNode()
+            mg.last = self.nextNode()
+            mg.graph.add_edge(mg.first, mg.last, label=')')
+            return mg
+    
         # 重复
         def repeat(mg):
             first_nexts = [(i, mg.graph[mg.first][i][0]['label']) for i in mg.graph[mg.first]]
@@ -199,9 +240,16 @@ class NFAManager:
                 if char == '|':
                     mg_stack.append(char)
                     i += 1
-            elif isTerminalSymbol(char):
-                mg_stack.append(convertTerminal2NFA(char))
-                i += 1
+            elif isTerminalSymbol(char):    # 不是控制符
+                if char == '@':
+                    mg_stack.append(convertLeftBracket2MG())
+                    i += 1
+                elif char == '$':
+                    mg_stack.append(convertRightBracket2MG())
+                    i += 1
+                else:
+                    mg_stack.append(convertTerminal2NFA(char))
+                    i += 1
 
         ret_mg = NFA()
         ret_mg.first = self.nextNode()

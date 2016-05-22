@@ -95,6 +95,8 @@ class Lex():
         nfaArr = []
         for token in self.ReTokenArr:
             token.re =  token.re.replace('\\n','\n').replace('\\t','\t').replace('\\r','\r')
+            if token.re == '(' or token.re == ')':
+                token.re = "\\" + token.re
             #print token.re
             if libre.match(r'[a-z]+',token.re):
                 self.keywords[token.re] = token.re
@@ -116,12 +118,11 @@ class Lex():
 
         print u'NFA->DFA完成，正在读取数据'
         dfacreator.draw()
-
-        #with open('../code/test.cpp','r') as f:
-        #    res = dfacreator.judgeString(f.read(), self.keywords)
+        with open('../code/test.cpp','r') as f:
+            res = dfacreator.judgeString(f.read(), self.keywords)
             
-        #for r in res:
-        #    print r
+        for r in res:
+            print r
 
 lex = Lex(lex_path)
 
