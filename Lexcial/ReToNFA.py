@@ -4,61 +4,124 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import pydot
-import os
 
 class NFA:
-
     def __init__(self):
-        self.graph = nx.MultiDiGraph()    # ¹¹½¨ÓĞÏòÍ¼
-        self.first = -1       # Æğµã
-        self.last  = -1       # ÖÕµã
+        self.graph = nx.MultiDiGraph()    # æ„å»ºæœ‰å‘å›¾
+        self.first = -1       # èµ·ç‚¹
+        self.last  = -1       # ç»ˆç‚¹
+        self.lastArr = {}
         
     def __str__(self):
         return str(self.first) + '--' + str(self.graph[self.first]) + '--' + str(self.last)
 
-    # ½« nfa ´æ´¢³É .dot ÎÄ¼ş
+    # å°† nfa å­˜å‚¨æˆ .dot æ–‡ä»¶
     def storeAsDot(self, name='nfa'):
-        pass
-        #nx.draw(self.graph)
-        #nx.write_dot(self.graph, name + '.png')
-        #dot = pydot.Dot(self.graph)
-        #dot.write_png('zzz.png')
+        nx.write_dot(self.graph, name + '.dot')      
+        g = pydot.graph_from_dot_file(name+'.dot')
+        g.write_jpg(name+'.jpg')
 
-    # ½« nfa ´æ´¢Îª dict¸ñÊ½
+    # è·å–infoä¿¡æ¯
+    def getInfo(self):
+        res = {}
+        res['start'] = self.first
+        res['end'] = self.lastArr
+        edge = []
+        for k,v in self.dic.iteritems():
+            for k2 in v.keys():
+                edge.append(k2)
+        edge = set(edge)
+        edge.remove('epsilon')
+        edge = list(edge)
+        
+        res['edge'] = edge
+        
+        return res
+
+    # å°† nfa å­˜å‚¨ä¸º dictæ ¼å¼
     def graph2dict(self):
         self.dic = {}
         for node, nbrsdict in self.graph.adjacency_iter():
             EDGE = {}
             NBR = []
-            for nbr, attr in nbrsdict.items():
-                label = attr[0]['label']
-                NBR.append(nbr)
-            EDGE[label] = NBR
+            for nbr, attr in nbrsdict.iteritems():
+                try:
+                    EDGE[attr[0]['label']].append(nbr)
+                except:
+                    EDGE[attr[0]['label']] = [nbr]
             self.dic[node] = EDGE
 
-    def store(self):
+    def store(self, property):
         self.storeAsDot()
         self.graph2dict()
+        self.property = property
+        self.lastArr[self.last] = property
+
+    def refresh(self):
+        self.storeAsDot()
+        self.graph2dict()
+
     
 class NFAManager:
     def __init__(self):
         self.next_node = -1
 
-    def feed(self, re):
-        self.next_node = -1
+    def feed(self, re, property):
+        #self.next_node = -1
+        re = self.convertSquareBrackets(re)
         nfa = self.convert(re)
-        nfa.store()
+        nfa.store(property)
         return nfa
 
-    # Ôö¼Ó½Úµã
+    # å¢åŠ èŠ‚ç‚¹
     def nextNode(self):
         self.next_node += 1
         return self.next_node
 
-    # ½« RegEx ×ª»»³É NFA
+    # å¤„ç†æ–¹æ‹¬å·[]ï¼Œå°†æ–¹æ‹¬å·ä¸­çš„å†…å®¹è½¬æˆã€æˆ–ã€çš„å½¢å¼
+    def convertSquareBrackets(self, string):
+        i = 0
+        small = ''
+        big = ''
+        m = 0
+        n = 0
+        newstr = ""
+        flag = False    # æ˜¯å¦è¿›å…¥æ–¹æ‹¬å·å†…
+        while i != len(string):
+            if string[i] == '[':
+                newstr += '('
+                flag = True
+            elif string[i] == ']':
+                newstr += ')'
+                flag = False
+            elif string[i] == '-':    # å¿…ç„¶å‡ºç°åœ¨æ–¹æ‹¬å·å†…
+                small = string[i-1]
+                big = string[i+1]
+                m = ord(small)
+                n = ord(big)
+                for j in range(m, n+1):
+                    if j == n and string[i+2] == ']':
+                        newstr += chr(j)
+                    else:
+                        newstr += chr(j)
+                        newstr += "|"
+            else:
+                if flag == False:   # æ–¹æ‹¬å·å¤–
+                    newstr += string[i]
+                if flag == True:    # æ–¹æ‹¬å·å†…
+                    if string[i-1] != '-' and string[i+1] != '-':
+                        if string[i+1] == ']':
+                            newstr += string[i]
+                        else:
+                            newstr += string[i]
+                            newstr += '|'
+            i += 1
+        return newstr
+
+    # å°† RegEx è½¬æ¢æˆ NFA
     def convert(self, input_str):
         
-        # ´¦ÀíÔ²À¨ºÅ()£¬·µ»ØÓÒÔ²À¨ºÅ)µÄÎ»ÖÃ
+        # å¤„ç†åœ†æ‹¬å·()ï¼Œè¿”å›å³åœ†æ‹¬å·)çš„ä½ç½®
         def findParenthesis(string, pos):
             temp = -1
             i = pos
@@ -71,20 +134,8 @@ class NFAManager:
                         return i
                 i += 1
 
-        # ´¦Àí·½À¨ºÅ[]£¬·µ»ØÓÒ·½À¨ºÅ]µÄÎ»ÖÃ
-        def findSquareBrackets(string, pos):
-            temp = -1
-            i = pos
-            while i != len(string) and temp != 0:
-                if string[i] == '[':
-                    temp -= 1
-                if string[i] == ']':
-                    temp += 1
-                    if temp == 0:
-                        return i
-                i += 1
     
-        # ½«ÖÕ½á·û×ª»»ÎªNFA
+        # å°†ç»ˆç»“ç¬¦è½¬æ¢ä¸ºNFA
         def convertTerminal2NFA(terminal):
             mg = NFA()
             mg.first = self.nextNode()
@@ -92,7 +143,7 @@ class NFAManager:
             mg.graph.add_edge(mg.first, mg.last, label=terminal)
             return mg
 
-        # ÖØ¸´
+        # é‡å¤
         def repeat(mg):
             first_nexts = [(i, mg.graph[mg.first][i][0]['label']) for i in mg.graph[mg.first]]
             for n, v in first_nexts:
@@ -101,47 +152,42 @@ class NFAManager:
             mg.first = mg.last
             return mg
 
-        # ´®Áª
+        # ä¸²è”
         def concat(mg1, mg2):
             mg1.graph = nx.union(mg1.graph, mg2.graph)
             mg1.graph.add_edge(mg1.last, mg2.first, label='epsilon')
             mg1.last  = mg2.last
             return mg1
 
-        # ¿ØÖÆ·û
+        # æ§åˆ¶ç¬¦
         def controlSymbols():
-            return ['[', ']', '(', ')', '*', '|']
+            return ['(', ')', '*', '|']
 
-        # ÊÇ¿ØÖÆ·û£¿
+        # æ˜¯æ§åˆ¶ç¬¦ï¼Ÿ
         def isControlSymbol(char):
             return char in controlSymbols()
 
-        # ÊÇÖÕ½á·û£¿
+        # æ˜¯ç»ˆç»“ç¬¦ï¼Ÿ
         def isTerminalSymbol(char):
             return not char in controlSymbols()
 
-        # »ñÈ¡ËùÓĞÖÕ½á·û
+        # è·å–æ‰€æœ‰ç»ˆç»“ç¬¦
         def getAllTerminals(re):
             return set([char for char in re if isTerminalSymbol(char)])
 
+        #############ä¸»ç¨‹åº##################
         length = len(input_str)
         if length == 0:
             return False
 
-        next_node = -1
         mg_stack = []
         i = 0
 
         while i < length:
             char = input_str[i]
-            if isControlSymbol(char):   # ÊÇ¿ØÖÆ·û
+            if isControlSymbol(char):   # æ˜¯æ§åˆ¶ç¬¦
                 if char == '(':
                     pos = findParenthesis(input_str, i + 1)
-                    sub_mg = self.convert(input_str[i + 1 : pos])
-                    mg_stack.append(sub_mg)
-                    i = pos + 1
-                if char == '[':
-                    pos = findSquareBrackets(input_str, i+1)
                     sub_mg = self.convert(input_str[i + 1 : pos])
                     mg_stack.append(sub_mg)
                     i = pos + 1
@@ -176,14 +222,32 @@ class NFAManager:
             self.union(ret_mg, prev)
         return ret_mg
 
-    # ºÏ²¢
+    # åˆå¹¶
     def union(self, nfa1, nfa2):
         nfa1.graph = nx.union(nfa1.graph, nfa2.graph)
         nfa1.graph.add_edge(nfa1.first, nfa2.first, label='epsilon')
-        nfa1.graph.add_edge(nfa2.last, nfa2.last, label='epsilon')
+        nfa1.graph.add_edge(nfa2.last, nfa1.last, label='epsilon')
         return nfa1
 
+    # è¿æ¥nfa
+    # æ³¨æ„å¿…é¡»ä¸€ç›´æŠŠç¬¬ä¸€ä¸ªæ”¾åœ¨æœ€å‰é¢
+    def mergeNFA(self, nfa1, nfa2):
+        nfa1.graph = nx.union(nfa1.graph, nfa2.graph)
+        nfa1.graph.add_edge(nfa1.first, nfa2.first, label='epsilon')
+        #nfa1.graph.add_edge(nfa2.last, nfa1.last, label='epsilon')
+        nfa1.lastArr[nfa2.last] = nfa2.property
+        nfa1.refresh()
+        return nfa1
 
-nfaManager = NFAManager()
-nfa = nfaManager.feed('(0)|(1)|(a*)')
-print nfa.dic
+    # è¾“å…¥ä¸€ä¸²nfaï¼Œè¾“å‡ºåˆå¹¶åçš„nfa
+    def merge(self, nfaArr):
+        nfa = nfaArr[0]
+        for i in xrange(1, len(nfaArr)):
+            nfa = self.mergeNFA(nfa, nfaArr[i])
+        return nfa
+
+#nfaManager = NFAManager()
+#nfa1 = nfaManager.feed('[a-z][a-z]*','1')
+#nfa2 = nfaManager.feed('4|5','2')
+#nfa = nfaManager.mergeNFA(nfa1, nfa2)
+#print nfa.dic

@@ -1,7 +1,15 @@
 #coding=utf8
 import new
-lex_path = '../code/lex.l'
+import sys
+import cPickle as pickle
+import re as libre
+from ReToNFA import NFA, NFAManager
+from NFAtoDFA import DFAmanager
+reload(sys)
+sys.setdefaultencoding('utf8')
 
+
+lex_path = '../code/lex.l'
 class Re_Token():
     def __init__(self, lexer, re):
         self.lexer = lexer
@@ -16,6 +24,7 @@ class Re_Token():
                 func+='\t'+code+'\n'
             exec func + '_method = callBack'
             self.__dict__['callBack'] = new.instancemethod(_method,self,None)
+            self.callBack()
 
 
 class Lex():
@@ -23,7 +32,8 @@ class Lex():
     # 初始化
     def __init__(self, path):
         self.lineno = 0
-        with open(lex_path,'r') as f:
+        self.keywords = {}
+        with open(path,'r') as f:
             self.parserLexFile(f.read())
     
     # 读取lex文件信息
@@ -74,76 +84,46 @@ class Lex():
                     token.re = token.re.replace('{'+k+'}',v)
             token.extends()
 
+        print u'lex数据读取完成，正在进行Re->NFA'
         self.ReToNFA()
         # 用户定义代码区
         pass
 
     # 解析正规表达式
     def ReToNFA(self):
-
-        # 合并NFA
-        def mergeNFA(NFA1, NFA2, op):
-            if op == '&':
-                pass
-            elif op == '|':
-                pass
-            elif op == '*':
-                pass
-
-        # s is a set, not string when op == []
-        def getNFA(s, op=''):
-            if op == '[]':
-                res = {
-                    'start':0,
-                    'end':1,
-                    'table':{0:{},1:None},
-                    'edge':[c for c in s]
-                    }
-                for c in s:
-                    res['table'][0][c] = 1
-                return res
+        nfaManager = NFAManager()
+        nfaArr = []
+        for token in self.ReTokenArr:
+            token.re =  token.re.replace('\\n','\n').replace('\\t','\t').replace('\\r','\r')
+            #print token.re
+            if libre.match(r'[a-z]+',token.re):
+                self.keywords[token.re] = token.re
             else:
-                return {
-                   'start':0,
-                   'end':1,
-                   'table':{0:{s:1}, 1:None},
-                   'edge':[s]
-                    }
+                nfaArr.append(nfaManager.feed(token.re,token.name))
+        self.nfa = nfaManager.merge(nfaArr)
 
-        #string2set
-        def str2set(s):
-            res = []
-            while s.find('-') != -1:
-                pos = s.find('-')
-                first_char = s[pos-1]
-                end_char = s[pos+1]
-
-
-        #for t in self.ReTokenArr:
-        #    print t.re
-        re = 'ab*'
-        NFAarr = []
-        lastNFA = None
-        while i < len(re):
-            s = re[i]
-            if s == '*':
-                lastNFA = mergeNFA(lastNFA, None, '*')
-            elif s == '[':
-                if(lastNFA != None):
-                    NFAarr.append(lastNFA)
-
-            else:
-                if(lastNFA != None):
-                    NFAarr.append(lastNFA)
-                lastNFA = getNFA(s)
-            i+=1
+        print u'Re->NFA完成，正在执行NFA->DFA'
+        self.NFAtoDFA()
         
+
+    def NFAtoDFA(self):
+        nfa = self.nfa
+
+
+
+        dfacreator = DFAmanager(nfa.dic,nfa.getInfo())
+        dfacreator.creatDFA()
+
+        print u'NFA->DFA完成，正在读取数据'
+        dfacreator.draw()
+
+        #with open('../code/test.cpp','r') as f:
+        #    res = dfacreator.judgeString(f.read(), self.keywords)
             
+        #for r in res:
+        #    print r
 
-
-lexer = Lex('../code/lex.l')
-
-
+lex = Lex(lex_path)
 
 #NFA = {
 #    'id':1,

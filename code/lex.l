@@ -1,40 +1,37 @@
-alpha			[A-Za-z]
+alpha			[A-Za-z_]
 digit			[0-9]
-alphanum		[A-Za-z0-9]
+alphanum		[A-Za-z0-9_]
 %%
 [ \t\r\n]	{
 	self.name = "IGNORE"
-	if self.str == "\n": self.lexer.lineno += 1
 }
+"{"
+"}"
+"=="
+"="
+"/"
+"+"
+"<"
+">"
+"<<"
+">>"
+"#"	
+";"
+">="
+"<="
+using
+namespace	
 int			
 if			
 else		
 return		
 float		
 struct
-"("
-")"
-"{"
-"}"
-"["
-"]"
-"=="
-"="
-";"		
-","			
-"."
-"+"		
-"-"			
-"*"			
-"/"
-
 {alpha}{alphanum}*	{
 				self.name = "NAME"
 			}
-
-{digit}+		{
+{digit}{digit}*		{
 			self.name = "NUMBER"
-			self.value	= int(self.str)
 			}
 
 %%

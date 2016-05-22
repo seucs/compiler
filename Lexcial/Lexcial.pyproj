@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>153a81ad-d8d2-44e2-bdc6-1035307e23b6</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>Syntactic.py</StartupFile>
+    <StartupFile>SeuLex.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -21,25 +21,27 @@
     <DebugSymbols>true</DebugSymbols>
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="Lexcial.py" />
-    <Compile Include="lexeme.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="other.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Syntactic.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="testplot.py">
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Before\Lexcial.py" />
+    <Compile Include="Before\lexeme.py" />
+    <Compile Include="Before\other.py" />
+    <Compile Include="Before\Syntactic.py" />
+    <Compile Include="Before\testplot.py" />
+    <Compile Include="NFAtoDFA.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ReToNFA.py" />
+    <Compile Include="SeuLex.py" />
+    <Compile Include="test.py" />
+    <Compile Include="testLex.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Before\" />
+  </ItemGroup>
   <Import Condition="Exists($(PtvsTargetsFile))" Project="$(PtvsTargetsFile)" />
   <Import Condition="!Exists($(PtvsTargetsFile))" Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

@@ -9,17 +9,15 @@ struct Student
 
 int main()
 {
-    int a = 1>=2;
-    int b = 2;
-    if(a==b)
-    	a = -b;
-    	if(b==3)
-    		b=3;
+    int aaqq = 122;
+    int xaxa = 234;
+    if(aaqq==xaxa)
+    	aaqq = -xaxa;
+    	if(xaxa==32)
+    		xaxa=33;
     	else
-    		b=1;
-    cout<<"HelloWorld"<<endl;
+    		xaxa=10001;
+    cout<<aaqq<<endl;
 
-    Student* student;
-    cout<<student->name>>endl;
     return 0;
 }
