@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>153a81ad-d8d2-44e2-bdc6-1035307e23b6</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>SeuLex.py</StartupFile>
+    <StartupFile>test.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -29,18 +29,25 @@
     <Compile Include="Before\Lexcial.py" />
     <Compile Include="Before\lexeme.py" />
     <Compile Include="Before\other.py" />
-    <Compile Include="Before\Syntactic.py" />
-    <Compile Include="Before\testplot.py" />
-    <Compile Include="NFAtoDFA.py">
+    <Compile Include="Lex\__init__.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ReToNFA.py" />
-    <Compile Include="SeuLex.py" />
+    <Compile Include="SeuYacc.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Before\Syntactic.py" />
+    <Compile Include="Before\testplot.py" />
+    <Compile Include="Lex\NFAtoDFA.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Lex\ReToNFA.py" />
+    <Compile Include="Lex\SeuLex.py" />
     <Compile Include="test.py" />
     <Compile Include="testLex.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Before\" />
+    <Folder Include="Lex\" />
   </ItemGroup>
   <Import Condition="Exists($(PtvsTargetsFile))" Project="$(PtvsTargetsFile)" />
   <Import Condition="!Exists($(PtvsTargetsFile))" Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />

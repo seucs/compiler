@@ -1,7 +1,6 @@
 #coding=utf8
 import new
 import sys
-import cPickle as pickle
 import re as libre
 from ReToNFA import NFA, NFAManager
 from NFAtoDFA import DFAmanager
@@ -26,6 +25,14 @@ class Re_Token():
             self.__dict__['callBack'] = new.instancemethod(_method,self,None)
             self.callBack()
 
+
+class Token():
+	def __init__(self, name):
+		self.func = None
+		self.name = name
+		self.value = value
+		
+		
 
 class Lex():
 
@@ -110,9 +117,6 @@ class Lex():
 
     def NFAtoDFA(self):
         nfa = self.nfa
-
-
-
         dfacreator = DFAmanager(nfa.dic,nfa.getInfo())
         dfacreator.creatDFA()
 

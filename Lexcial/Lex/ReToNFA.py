@@ -293,9 +293,3 @@ class NFAManager:
         for i in xrange(1, len(nfaArr)):
             nfa = self.mergeNFA(nfa, nfaArr[i])
         return nfa
-
-#nfaManager = NFAManager()
-#nfa1 = nfaManager.feed('[a-z][a-z]*','1')
-#nfa2 = nfaManager.feed('4|5','2')
-#nfa = nfaManager.mergeNFA(nfa1, nfa2)
-#print nfa.dic
