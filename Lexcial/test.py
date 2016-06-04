@@ -16,7 +16,20 @@
 #g.write_jpg(name+'.jpg')
 
 
-a = [1,2]
-b = [3,4]
+#a = set([2,3])
+#b = set([2,4])
+#a |= b
+#print a
 
-print a+b
+class A():
+    def __init__(self):
+        pass
+    def xxx(self):
+        print 123
+    def x(self, f):
+        f()
+
+a = A()
+
+f = a.xxx
+a.x(f)

@@ -1,22 +1,19 @@
 #coding=utf8
 import new
 import json
+import sys
+from LR import LR1
+from Lex.SeuLex import Token, Lex
 reload(sys)
 sys.setdefaultencoding('utf8')
 
 yacc_path = '../code/minic.cpp'
 
-class Token():
-    def __init__(self, name, value = ''):
-        self.name = name
-        if value == '':
-            self.value = name
-        else:
-            self.value = value
 
 
 class Yacc():
-    def __init__(self, path):
+    def __init__(self, path, terminals):
+        self.terminals = terminals
         with open(path,'r') as f:
             self.parserYaccFile(f.read())
 
@@ -31,49 +28,98 @@ class Yacc():
         defines = [d for d in define.split('\n') if d != '']
         for d in defines:
             ds = d.split()
-            precedence.append((ds[0]))
-
+            ds[0] += '%'
+            ds = [dd[1:-1] for dd in ds]     
+            precedence.append(ds)
 
         
         # 规则区数据读取
-        tokenArr = self.ReTokenArr = []
+        grammar_rule = []
+        func_code = []
+        self.elements = set()
         rules = [r for r in rule.split('\n') if r != '']
-        code_flag = False
-        code = ''
-        cur_Token = None
-        for r in rules:
-            #print r
-            if code_flag:
-                if r.find('}') != -1:
-                    code_flag = False
-                    cur_Token.func = code[:-1]
-                    tokenArr.append(cur_Token)
-                    code = ''
+        sum_len = len(rules)
+        i = 0
+        flag = True
+
+        while i<sum_len:
+            left_rule = ''
+            rule = rules[i].split()
+            while rule[0] != ';':
+                if left_rule == '':
+                    left_rule = rule[0]
+                    self.elements.add(left_rule)
+                    ## 第一个为起始S
+                    if flag:
+                        self.start = left_rule
+                        flag = False
+
+                for ii in xrange(len(rule)):
+                    if rule[ii][0] == "'" and rule[ii][-1] == "'":
+                        rule[ii] = rule[ii][1:-1]
+                #if rule[-2].find("'")
+
+                if rule[0] == '|':
+                    if rule[-1] == '{':
+                        grammar_rule.append([left_rule, rule[1:-1] ])
+                    else:
+                        grammar_rule.append([left_rule, rule[1:] ])
                 else:
-                    code += r.strip() + '\n'
-            elif r.find('"') != -1:
-                token_re = r[r.index('"')+1:r.rindex('"')]
-                tokenArr.append(Re_Token(self, token_re))
-            elif r.find('{') == -1:
-                token_re = r.strip()
-                tokenArr.append(Re_Token(self, token_re))
-            else:
-                token_re = r[:r.rindex('{')].strip()
-                cur_Token = Re_Token(self, token_re)
-                code_flag = True
+                    if rule[-1] == '{':
+                        grammar_rule.append([left_rule, rule[2:-1] ])
+                    else:
+                        grammar_rule.append([left_rule, rule[2:] ])
 
-        # 替换定义区正规表达式
-        for token in tokenArr:
-            for k,v in temp_token.iteritems():
-                    token.re = token.re.replace('{'+k+'}',v)
-            token.extends()
+                code = ''
+                if rule[-1] == '{':
+                    i += 1
+                    while rules[i].replace(' ','').replace('\t','').replace('}','') != '':
+                        code += rules[i] + '\n'
+                        i+=1
+                func_code.append(code)
+                i += 1
+                rule = rules[i].split()
+            
+            i+=1
+        
+        
+        self.grammar_rule = grammar_rule
+        print grammar_rule
 
-        print u'yacc数据读取完成，正在进行'
-        self.ReToNFA()
+        self.func_code = func_code
+        self.precedence = precedence
+        self.elements = list(self.elements) + self.terminals
+        self.elements.append('epsilon')
+        self.terminals.append('epsilon')
+
+        print u'yacc数据读取完成，正在进行LR(1)分析以及PPT的生成...'
+        self.createLR()
         # 用户定义代码区
         pass
 
-names = []
-if_flag = False
+    # 进行LR1分析
+    def createLR(self):
 
-yacc = Yacc()
+
+        self.lr1 = LR1(self.grammar_rule,self.precedence,self.elements,self.terminals,self.start)
+
+        #for i in xrange(len(self.lr1.grammar_rule)):
+        #    rule = self.lr1.grammar_rule[i]
+        #    print i,rule
+
+        #for k,v in self.lr1.parsing_table.iteritems():
+        #    print k,v
+
+        #for i in xrange(len(self.lr1.goto)):
+        #    print i,self.lr1.goto[i]
+
+    def feedTokens(self, tokens):
+        self.lr1.feedTokens(tokens)
+
+
+lex = Lex('../code/lex.l')
+tokens = lex.feedCode('../code/test.cpp')
+terminals = lex.getTerminals()
+
+yacc = Yacc(yacc_path, terminals)
+yacc.feedTokens(tokens)

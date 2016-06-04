@@ -231,7 +231,8 @@ class DFAmanager:
                 else:
                     print u"刚刚返回初始态后，仍找不到边，字符串有误",obj
         if self.s_DFA_INFO['end'].has_key(step):
-              print self.s_DFA_INFO['end'][step]
+            pass
+            #print self.s_DFA_INFO['end'][step]
         else:
               print u"最后一个没有状态"
         return res
@@ -246,7 +247,7 @@ class DFAmanager:
         nx.write_dot(g, name + '.dot')      
         g = pydot.graph_from_dot_file(name+'.dot')
         g.write_jpg(name+'.jpg')
-        print self.s_DFA
+        #print self.s_DFA
 
 
 

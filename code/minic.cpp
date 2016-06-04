@@ -1,11 +1,10 @@
-%nonassoc	LOW  /* dummy token to suggest shift on else */
-%nonassoc	else /* higher than LOW */
-
 %nonassoc	'=='
 %left		'+'	'-'
 %left		'*'	'/'
-%left		'.'	'['	/* C compatible precedence rules */
-
+%left		'.'	'['	
+%left       'UMINUS'
+%left       'if'
+%left       'else'
 %%
 program		: declarations
 		;
@@ -64,28 +63,24 @@ type :    int
 		| float
 		;
 
-statements	: statement ';' statements
+statements	: statement statements
 		| epsilon
 		;
 
 statement	: if '(' exp ')' statement {
-				if p[3]:
-					if_flag = True
+				pass
 			}
 
 		| if '(' exp ')' statement else statement {
-				if p[3]:
-					if_flag = True
+				pass
 		}
 
-		| lexp '=' exp	{ 
-			if if_flag:
-				names[p[1]] = p[3]
-				if_flag = False
+		| lexp '=' exp ';'	{ 
+			pass
 			}
 
-		| return exp { 
-			return_value = p[2];
+		| return exp ';' { 
+			pass
 			}
 
 		| block
@@ -120,7 +115,8 @@ exp		: exp '+' exp		{
 			p[0] = p[2]
 			}
 
-		| '-' exp 	{ 
+		| '-' exp { 
+
 			p[0] = -p[2] 
 			}
 

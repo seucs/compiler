@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import pydot
 
 class NFA:
+
     def __init__(self):
         self.graph = nx.MultiDiGraph()    # 构建有向图
         self.first = -1       # 起点
@@ -69,6 +70,7 @@ class NFAManager:
     def feed(self, re, property):
         #self.next_node = -1
         re = self.convertRealParenthesis(re)
+        re = self.convertRealMultiple(re)
         re = self.convertSquareBrackets(re)
         nfa = self.convert(re)
         nfa.store(property)
@@ -102,6 +104,26 @@ class NFAManager:
         return newstr
         raise Exception("mysterious character appears at wrong positon!")
         
+    # 处理 \* ，RegEx中 \*->%
+    def convertRealMultiple(self, string):
+        i = 0
+        newstr = ""
+        while i != len(string):
+            if string[i] == '\\':
+                if i+1 >= len(string):
+                    newstr += '\\'
+                    break
+                if string[i+1] == '*':
+                    newstr += '%'
+                    i += 1
+                else:
+                    newstr += string[i]
+            else:
+                newstr += string[i]
+            i += 1
+        return newstr
+        raise Exception("mysterious character appears at wrong positon!")
+
     # 处理方括号[]，将方括号中的内容转成『或』的形式
     def convertSquareBrackets(self, string):
         i = 0
@@ -184,6 +206,14 @@ class NFAManager:
             mg.graph.add_edge(mg.first, mg.last, label=')')
             return mg
     
+        # 将真乘号号转成图
+        def convertMultiple2MG():
+            mg = NFA()
+            mg.first = self.nextNode()
+            mg.last = self.nextNode()
+            mg.graph.add_edge(mg.first, mg.last, label='*')
+            return mg
+
         # 重复
         def repeat(mg):
             first_nexts = [(i, mg.graph[mg.first][i][0]['label']) for i in mg.graph[mg.first]]
@@ -246,6 +276,9 @@ class NFAManager:
                     i += 1
                 elif char == '$':
                     mg_stack.append(convertRightBracket2MG())
+                    i += 1
+                elif char == '%':
+                    mg_stack.append(convertMultiple2MG())
                     i += 1
                 else:
                     mg_stack.append(convertTerminal2NFA(char))

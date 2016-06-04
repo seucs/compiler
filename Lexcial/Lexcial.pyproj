@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>153a81ad-d8d2-44e2-bdc6-1035307e23b6</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>test.py</StartupFile>
+    <StartupFile>SeuYacc.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -26,10 +26,16 @@
     <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Allcontrol.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Before\Lexcial.py" />
     <Compile Include="Before\lexeme.py" />
     <Compile Include="Before\other.py" />
     <Compile Include="Lex\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LR.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SeuYacc.py">
@@ -48,6 +54,7 @@
   <ItemGroup>
     <Folder Include="Before\" />
     <Folder Include="Lex\" />
+    <Folder Include="Yacc\" />
   </ItemGroup>
   <Import Condition="Exists($(PtvsTargetsFile))" Project="$(PtvsTargetsFile)" />
   <Import Condition="!Exists($(PtvsTargetsFile))" Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />

@@ -7,8 +7,6 @@ from NFAtoDFA import DFAmanager
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-
-lex_path = '../code/lex.l'
 class Re_Token():
     def __init__(self, lexer, re):
         self.lexer = lexer
@@ -23,16 +21,15 @@ class Re_Token():
                 func+='\t'+code+'\n'
             exec func + '_method = callBack'
             self.__dict__['callBack'] = new.instancemethod(_method,self,None)
-            self.callBack()
-
+            self.callBack()	
 
 class Token():
-	def __init__(self, name):
-		self.func = None
-		self.name = name
-		self.value = value
-		
-		
+    def __init__(self, name, value = ''):
+        self.name = name
+        if value == '':
+            self.value = name
+        else:
+            self.value = value
 
 class Lex():
 
@@ -102,7 +99,7 @@ class Lex():
         nfaArr = []
         for token in self.ReTokenArr:
             token.re =  token.re.replace('\\n','\n').replace('\\t','\t').replace('\\r','\r')
-            if token.re == '(' or token.re == ')':
+            if token.re == '(' or token.re == ')' or token.re == '*':
                 token.re = "\\" + token.re
             #print token.re
             if libre.match(r'[a-z]+',token.re):
@@ -114,26 +111,36 @@ class Lex():
         print u'Re->NFA完成，正在执行NFA->DFA'
         self.NFAtoDFA()
         
-
     def NFAtoDFA(self):
         nfa = self.nfa
-        dfacreator = DFAmanager(nfa.dic,nfa.getInfo())
-        dfacreator.creatDFA()
-
+        self.dfacreator = DFAmanager(nfa.dic,nfa.getInfo())
+        self.dfacreator.creatDFA()
+        self.dfacreator.draw()
         print u'NFA->DFA完成，正在读取数据'
-        dfacreator.draw()
-        with open('../code/test.cpp','r') as f:
-            res = dfacreator.judgeString(f.read(), self.keywords)
-            
+
+    def feedCode(self, code_path):  
+        with open(code_path,'r') as f:
+            res = self.dfacreator.judgeString(f.read(), self.keywords)
+           
+
+        TokenArr = []
         for r in res:
+            if r['category'] == 'IGNORE':
+                continue
             print r
+            if r['category'] == 'NUMBER':
+                TokenArr.append(Token(r['category'], int(r['mention'])))
+            else:
+                TokenArr.append(Token(r['category'], r['mention']))
 
-lex = Lex(lex_path)
+        return TokenArr
 
-#NFA = {
-#    'id':1,
-#    0:{'a':[0,1],'b':[0],'ee':None},
-#    1:{'a':None,'b':[2],'ee':None}
-#    }
+    def getTerminals(self):
+        terminals = []
+        for s in self.ReTokenArr:
+            if s.name == 'IGNORE':
+                continue
+            terminals.append(s.name)
 
-#print NFA[0]['a']
+        return terminals
+

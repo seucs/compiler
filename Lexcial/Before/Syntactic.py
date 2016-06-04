@@ -98,6 +98,7 @@ def allFOLLOW(S):
                     if -1 in Fb or beta == []:
                         change_flag = mergeSet(FOLLOW[rule[i]],FOLLOW[Tn])
 
+
 # 生成预测分析表
 def createPPT(S):
     allFOLLOW(S)
