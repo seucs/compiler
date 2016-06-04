@@ -99,9 +99,19 @@ class Yacc():
 
     # 进行LR1分析
     def createLR(self):
+        
+        func_rule = []
+        for i in xrange(len(self.func_code)):
+            code = self.func_code[i]
+            if code == '':
+                func_rule.append(None)
+                continue
+            code = 'def func_%d(p):\n'%i + code
+            exec code
+            func_rule.append(eval('func_%d'%i))
 
 
-        self.lr1 = LR1(self.grammar_rule,self.precedence,self.elements,self.terminals,self.start)
+        self.lr1 = LR1(self.grammar_rule,self.precedence,self.elements,self.terminals,self.start, func_rule)
 
         #for i in xrange(len(self.lr1.grammar_rule)):
         #    rule = self.lr1.grammar_rule[i]
@@ -112,10 +122,14 @@ class Yacc():
 
         #for i in xrange(len(self.lr1.goto)):
         #    print i,self.lr1.goto[i]
+        pass
 
     def feedTokens(self, tokens):
         self.lr1.feedTokens(tokens)
 
+
+
+names = {}
 
 lex = Lex('../code/lex.l')
 tokens = lex.feedCode('../code/test.cpp')

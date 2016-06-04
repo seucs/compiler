@@ -21,15 +21,19 @@
 #a |= b
 #print a
 
-class A():
-    def __init__(self):
-        pass
-    def xxx(self):
-        print 123
-    def x(self, f):
-        f()
+#func = 'def callBack(self):\n' 
+#for code in self.func.split('\n'):
+#    func+='\t'+code+'\n'
+#exec func + '_method = callBack'
+#self.__dict__['callBack'] = new.instancemethod(_method,self,None)
 
-a = A()
 
-f = a.xxx
-a.x(f)
+ff = '''def fff(x):
+            print x
+    '''
+
+exec ff
+
+x = eval('fff')
+
+x(1)

@@ -6,42 +6,43 @@ import pydot
 
 
 
-grammar_rule = [
-    ['statement', ['NAME', '=', 'expression']],          
-    ['statement', ['expression']],                       
-    ['expression', ['expression', '+', 'expression']], 
-    ['expression', ['expression', '-', 'expression']],
-    ['expression', ['expression', '*', 'expression']],
-    ['expression', ['expression', '/', 'expression']],        
-    ['expression', ['-', 'expression'], '%prec UMINUS'], 
-    ['expression', ['(', 'expression', ')']],           
-    ['expression', ['NUMBER']],
-    ['expression', ['NAME']],
-]
+#grammar_rule = [
+#    ['statement', ['NAME', '=', 'expression']],          
+#    ['statement', ['expression']],                       
+#    ['expression', ['expression', '+', 'expression']], 
+#    ['expression', ['expression', '-', 'expression']],
+#    ['expression', ['expression', '*', 'expression']],
+#    ['expression', ['expression', '/', 'expression']],        
+#    ['expression', ['-', 'expression'], '%prec UMINUS'], 
+#    ['expression', ['(', 'expression', ')']],           
+#    ['expression', ['NUMBER']],
+#    ['expression', ['NAME']],
+#]
 
-elements=['statement','expression','NAME','NUMBER','+','-','*','/','(',')']
-stopelements = ['NAME','NUMBER','+','-','*','/','(',')']
-start = 'statement'
+#elements=['statement','expression','NAME','NUMBER','+','-','*','/','(',')']
+#stopelements = ['NAME','NUMBER','+','-','*','/','(',')']
+#start = 'statement'
 
-precedence = (
-    ('left','+','-'), 
-    ('left','*','/'),
-    ('right','UMINUS'),
-)
+#precedence = (
+#    ('left','+','-'), 
+#    ('left','*','/'),
+#    ('right','UMINUS'),
+#)
 
 
 class LR1():
     
-    def __init__(self, grammar_rule,precedence,elements,token,start):
+    def __init__(self, grammar_rule,precedence,elements,token,start, func_rule):
         self.grammar_rule = grammar_rule
         self.elements = elements
         self.precedence = precedence
         self.token = token
         self.start = start
+        self.func_rule = func_rule
 
         ##### 主程序部分
         self.create_goto()
-        self.draw()
+        #self.draw()
 
     def creat_table(self):
         statenum=-1
@@ -237,7 +238,8 @@ class LR1():
 
     # 通过PPT分析Token序列
     def feedTokens(self, input_stack):
-        
+
+        func_rule = self.func_rule
         # 需要的数据
         parsing_table = self.parsing_table
         grammar_rule = self.grammar_rule
@@ -263,7 +265,7 @@ class LR1():
             for i in range(len(value_stack)):
                 value_string += str(value_stack[i])
             #print "%-30s%-30s%-30s%-30s%-30s" %(state_string, symbol_string, input_string, value_string, move)
-            print "%-50s%-50s" %(state_string, symbol_string)
+            print "%-50s%-50s" %(state_string, value_string)
 
             input_token = input_stack[pointer]       # 当前读入符，应该是一个终结符
             input_token_name = input_token.name
@@ -320,18 +322,20 @@ class LR1():
 
                                     len_right = len(production_right)                  # 产生式右部的长度
 
-                                    p = []
-                                    p.append(0)
+                                    p = [0]*(len_right+1)
 
                                     # 弹出栈顶的 len_right 项
+                                    temp_p = len_right
                                     for j in range(len_right):
                                         symbol_stack.pop()
                                         state_stack.pop()
                                         temp_value = value_stack.pop()
-                                        p.append(temp_value)
+                                        p[temp_p] = temp_value
+                                        temp_p -= 1
 
                                     # 语义动作 p[0]保存当前归约产生式运算后的结果
-                                    #func_rule[number](p)
+                                    if func_rule[number] != None:
+                                        func_rule[number](p)
 
                                     symbol_stack.append(production_left)     # 将产生式左部和对应的值压入符号栈中
                                     value_stack.append(p[0])                 # 归约完的值压入值栈
@@ -400,18 +404,20 @@ class LR1():
 
                             len_right = len(production_right)                  # 产生式右部的长度
 
-                            p = []
-                            p.append(0)
+                            p = [0]*(len_right+1)
 
-                            # 弹出栈顶的 len_right 项
+                         # 弹出栈顶的 len_right 项
+                            temp_p = len_right
                             for j in range(len_right):
                                 symbol_stack.pop()
                                 state_stack.pop()
                                 temp_value = value_stack.pop()
-                                p.append(temp_value)
+                                p[temp_p] = temp_value
+                                temp_p -= 1
 
                             # 语义动作 p[0]保存当前归约产生式运算后的结果
-                            #func_rule[number](p)
+                            if func_rule[number] != None:
+                                func_rule[number](p)
 
                             symbol_stack.append(production_left)     # 将产生式左部和对应的值压入符号栈中
                             value_stack.append(p[0])                 # 归约完的值压入值栈

@@ -3,8 +3,6 @@
 %left		'*'	'/'
 %left		'.'	'['	
 %left       'UMINUS'
-%left       'if'
-%left       'else'
 %%
 program		: declarations
 		;
@@ -76,7 +74,7 @@ statement	: if '(' exp ')' statement {
 		}
 
 		| lexp '=' exp ';'	{ 
-			pass
+			names[p[1]] = p[3]
 			}
 
 		| return exp ';' { 
@@ -115,34 +113,12 @@ exp		: exp '+' exp		{
 			p[0] = p[2]
 			}
 
-		| '-' exp { 
-
-			p[0] = -p[2] 
-			}
-
 		| var		{ 
 			p[0] = names[p[1]]
 			}
 
 		| NUMBER 		{ 
 			p[0] = p[1] 
-			}
-
-		| NAME '(' ')'	{ 
-			pass
-			}
-
-		| NAME '(' exps ')'	{ 
-			$$ = check_fun_call(scope,$1,&$3); 
-			}
-		;
-
-exps	: exp 		{ 
-			$$ = types_list_insert(0,$1); 
-			}
-
-		| exp ',' exps	{ 
-			$$ = types_list_insert($3,$1); 
 			}
 		;
 
