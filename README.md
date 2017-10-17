@@ -30,11 +30,11 @@ graphviz 2.38
 * 语法支持epsilon的存在，比如：int main(int a),int main ()都是合法的。实现的方式为PPT表中会存在epsilon这个终结符。当总控程序发现在PPT表中出现error时，会先选择epsilon，观察是否还是error
 
 ## Visualization
-NFA部分可视化结果（[完整版](graph/nfa.jpg)）：
+NFA部分可视化结果（[完整版](https://raw.githubusercontent.com/seucs/compiler/master/graph/nfa.jpg)）：
 ![](graph/nfa_part.png)
 
-GOTO图部分可视化结果（[完整版](graph/goto.jpg)）：
+GOTO图部分可视化结果（[完整版](https://raw.githubusercontent.com/seucs/compiler/master/graph/goto.jpg)）：
 ![](graph/goto_part.png)
 
-DFA部分可视化结果（[完整版](graph/dfa.jpg)）：
+DFA部分可视化结果（[完整版](https://raw.githubusercontent.com/seucs/compiler/master/graph/dfa.jpg)）：
 ![](graph/dfa_part.png)
