@@ -7,7 +7,7 @@
 |:----:|----|
 |[Zhixin Piao](https://github.com/a367) | lex与yacc的文件读取，状态图的生成，最后代码整合 |
 |[Shengjia Yan](https://github.com/yanshengjia) | RE  NFA，LR(1)总控程序的实现 |
-|[Ruiming Wang]()|NFA  DFA，DFA最小化，LR(1) GOTO图、预测分析表的生成|
+|[Ruiming Wang](https://github.com/Rimenwang)|NFA  DFA，DFA最小化，LR(1) GOTO图、预测分析表的生成|
 
 ## Environment
 Python 2.7.10 (64 bit),
