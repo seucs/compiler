@@ -1,9 +1,9 @@
 # Compiler
 东南大学编译原理课程设计——基于python的Lex和Yacc实现
 
-## Partner(equal contribution)
+## Contributor (equal contribution)
 
-|Partner | Contribution|
+|Contributor | Contribution|
 |:----:|----|
 |[Zhixin Piao](https://github.com/a367) | lex与yacc的文件读取，状态图的生成，最后代码整合 |
 |[Shengjia Yan](https://github.com/yanshengjia) | RE  NFA，LR(1)总控程序的实现 |
